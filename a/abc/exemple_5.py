@@ -1,0 +1,44 @@
+# Пример абстрактного класса BaseSSH:
+import paramiko
+import time
+import abc
+
+
+class BaseSSH(abc.ABC):
+    def __init__(self, ip, username, password):
+        self.ip = ip
+        self.username = username
+        self.password = password
+        self._MAX_READ = 10000
+
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+        client.connect(
+            hostname=ip,
+            username=username,
+            password=password,
+            look_for_keys=False,
+            allow_agent=False)
+
+        self._ssh = client.invoke_shell()
+        time.sleep(1)
+        self._ssh.recv(self._MAX_READ)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._ssh.close()
+
+    def close(self):
+        self._ssh.close()
+
+    @abc.abstractmethod
+    def send_command(self, command):
+        """Send command and get command output"""
+
+    @abc.abstractmethod
+    def send_config_commands(self, commands):
+        """Send configuration command(s)"""
+
