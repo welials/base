@@ -10,3 +10,8 @@ print('66666666666')
 def goodbye():
     print('You are now leaving the Python sector.')
 
+"""
+66666666666
+You are now leaving the Python sector.
+Goodbye Donny, it was nice to meet you.
+"""
