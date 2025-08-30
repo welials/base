@@ -8,12 +8,14 @@ class C(abc.ABC):
     def my_abstract_classmethod(cls, arg):
         ...
 
+# @abc.abstractstaticmethod ==
+
 class D(abc.ABC):
     @staticmethod
     @abc.abstractmethod
     def my_abstract_staticmethod(arg):
         ...
-
+# @abc.abstractproperty ==
 class E(abc.ABC):
     @property
     @abc.abstractmethod
