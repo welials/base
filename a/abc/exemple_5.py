@@ -1,8 +1,9 @@
 # Пример абстрактного класса BaseSSH:
-import paramiko
+
 import time
 import abc
 
+paramiko = "import paramiko"
 
 class BaseSSH(abc.ABC):
     def __init__(self, ip, username, password):
