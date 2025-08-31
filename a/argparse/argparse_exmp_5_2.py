@@ -9,7 +9,7 @@ The 'store_const' action is most commonly used with optional arguments that spec
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--foo', action='store_const', const=42)
-parser.parse_args(['--foo'])
+print(parser.parse_args(['--foo']))
 parser.print_help()
 """
 Namespace(foo=42)

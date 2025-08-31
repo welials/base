@@ -10,12 +10,12 @@ For example, to globally suppress attribute creation on parse_args() calls, we s
 parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
 parser.add_argument('--foo')
 parser.add_argument('bar', nargs='?')
-parser.parse_args(['--foo', '1', 'BAR'])
+print(parser.parse_args(['--foo', '1', 'BAR']))
 parser.print_help()
 """
 Namespace(bar='BAR', foo='1')
 """
-parser.parse_args([])
+print(parser.parse_args([]))
 """
 Namespace()
 """

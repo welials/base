@@ -6,7 +6,7 @@ Most command-line options will use - as the prefix, e.g. -f/--foo. Parsers that 
 parser = argparse.ArgumentParser(prog='PROG', prefix_chars='-+')
 parser.add_argument('+f')
 parser.add_argument('++bar')
-parser.parse_args('+f X ++bar Y'.split())
+print(parser.parse_args('+f X ++bar Y'.split()))
 parser.print_help()
 """
 Namespace(bar='Y', f='X')

@@ -12,7 +12,7 @@ parser.print_help()
 # _StoreAction(option_strings=['--integers'], dest='integers', nargs=None, const=None, default=None, type=<class 'int'>, choices=None, help=None, metavar=None)
 print("#"*100)
 try:
-    parser.parse_args('--integers a'.split())
+    print(parser.parse_args('--integers a'.split()))
 except argparse.ArgumentError:
     print('Catching an argumentError')
 """

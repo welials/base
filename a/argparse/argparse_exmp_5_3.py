@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--foo', action='store_true')
 parser.add_argument('--bar', action='store_false')
 parser.add_argument('--baz', action='store_false')
-parser.parse_args('--foo --bar'.split())
+print(parser.parse_args('--foo --bar'.split()))
 parser.print_help()
 """
 Namespace(foo=True, bar=False, baz=True)

@@ -8,6 +8,7 @@ with any values from the command line appended after those default values. Examp
 parser = argparse.ArgumentParser()
 parser.add_argument('--foo', action='append')
 print(parser.parse_args('--foo 1 --foo 2'.split()))
+parser.print_help()
 """
 Namespace(foo=['1', '2'])
 """

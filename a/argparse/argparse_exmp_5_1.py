@@ -13,19 +13,19 @@ When parse_args() is called, optional arguments will be identified by the - pref
 parser = argparse.ArgumentParser(prog='PROG')
 parser.add_argument('-f', '--foo')
 parser.add_argument('bar')
-parser.parse_args(['BAR'])
+print(parser.parse_args(['BAR']))
 parser.print_help()
 """
 Namespace(bar='BAR', foo=None)
 """
 print("#"*100)
-parser.parse_args(['BAR', '--foo', 'FOO'])
+print(parser.parse_args(['BAR', '--foo', 'FOO']))
 parser.print_help()
 """
 Namespace(bar='BAR', foo='FOO')
 """
 print("#"*100)
-parser.parse_args(['--foo', 'FOO'])
+print(parser.parse_args(['--foo', 'FOO']))
 parser.print_help()
 """
 usage: PROG [-h] [-f FOO] bar
