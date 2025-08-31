@@ -2,7 +2,7 @@ import os
 
 
 if __name__ == '__main__':
-    os.system("python argparse_exmp_1.py -h")
+    os.system("python argparse_exmp_2_5.py -h")
 
 """
 usage: ProgramName [-h] [-c COUNT] [-v] filename
