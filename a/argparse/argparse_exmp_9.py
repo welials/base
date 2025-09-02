@@ -11,3 +11,4 @@ print(parser.parse_args(['--no-foo']))
 """
 Namespace(foo=False)
 """
+
