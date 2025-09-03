@@ -1,7 +1,9 @@
 import argparse
 # Invalid arguments
 """
-While parsing the command line, parse_args() checks for a variety of errors, including ambiguous options, invalid types, invalid options, wrong number of positional arguments, etc. When it encounters such an error, it exits and prints the error along with a usage message:
+While parsing the command line, parse_args() checks for a variety of errors, 
+including ambiguous options, invalid types, invalid options, wrong number of positional arguments, etc. 
+When it encounters such an error, it exits and prints the error along with a usage message:
 """
 parser = argparse.ArgumentParser(prog='PROG')
 parser.add_argument('--foo', type=int)
@@ -28,7 +30,11 @@ PROG: error: extra arguments found: badger
 """
 # Arguments containing -
 """
-The parse_args() method attempts to give errors whenever the user has clearly made a mistake, but some situations are inherently ambiguous. For example, the command-line argument -1 could either be an attempt to specify an option or an attempt to provide a positional argument. The parse_args() method is cautious here: positional arguments may only begin with - if they look like negative numbers and there are no options in the parser that look like negative numbers:
+The parse_args() method attempts to give errors whenever the user has clearly made a mistake, 
+but some situations are inherently ambiguous. For example, the command-line argument -1 could 
+either be an attempt to specify an option or an attempt to provide a positional argument. 
+The parse_args() method is cautious here: positional arguments may only begin with 
+- if they look like negative numbers and there are no options in the parser that look like negative numbers:
 """
 
 parser = argparse.ArgumentParser(prog='PROG')
@@ -70,7 +76,8 @@ usage: PROG [-h] [-1 ONE] [foo]
 PROG: error: argument -1: expected one argument
 """
 """
-If you have positional arguments that must begin with - and don’t look like negative numbers, you can insert the pseudo-argument '--' which tells parse_args() that everything after that is a positional argument:
+If you have positional arguments that must begin with - and don’t look like negative numbers, 
+you can insert the pseudo-argument '--' which tells parse_args() that everything after that is a positional argument:
 """
 parser.parse_args(['--', '-f'])
 """
@@ -79,7 +86,8 @@ Namespace(foo='-f', one=None)
 
 # Argument abbreviations (prefix matching)
 """
-The parse_args() method by default allows long options to be abbreviated to a prefix, if the abbreviation is unambiguous (the prefix matches a unique option):
+The parse_args() method by default allows long options to be abbreviated to a prefix, 
+if the abbreviation is unambiguous (the prefix matches a unique option):
 """
 parser = argparse.ArgumentParser(prog='PROG')
 parser.add_argument('-bacon')
@@ -98,12 +106,14 @@ usage: PROG [-h] [-bacon BACON] [-badger BADGER]
 PROG: error: ambiguous option: -ba could match -badger, -bacon
 """
 """
-An error is produced for arguments that could produce more than one options. This feature can be disabled by setting allow_abbrev to False.
+An error is produced for arguments that could produce more than one options. 
+This feature can be disabled by setting allow_abbrev to False.
 """
 
 # Beyond sys.argv
 """
-Sometimes it may be useful to have an ArgumentParser parse arguments other than those of sys.argv. This can be accomplished by passing a list of strings to parse_args(). This is useful for testing at the interactive prompt:
+Sometimes it may be useful to have an ArgumentParser parse arguments other than those of sys.argv. 
+This can be accomplished by passing a list of strings to parse_args(). This is useful for testing at the interactive prompt:
 """
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -127,7 +137,8 @@ Namespace(accumulate=<built-in function sum>, integers=[1, 2, 3, 4])
 class argparse.Namespace
 Simple class used by default by parse_args() to create an object holding attributes and return it.
 
-This class is deliberately simple, just an object subclass with a readable string representation. If you prefer to have dict-like view of the attributes, you can use the standard Python idiom, vars():
+This class is deliberately simple, just an object subclass with a readable string representation. 
+If you prefer to have dict-like view of the attributes, you can use the standard Python idiom, vars():
 """
 parser = argparse.ArgumentParser()
 parser.add_argument('--foo')
@@ -137,7 +148,8 @@ vars(args)
 {'foo': 'BAR'}
 """
 """
-It may also be useful to have an ArgumentParser assign attributes to an already existing object, rather than a new Namespace object. This can be achieved by specifying the namespace= keyword argument:
+It may also be useful to have an ArgumentParser assign attributes to an already existing object, rather than a new Namespace object. 
+This can be achieved by specifying the namespace= keyword argument:
 """
 class C:
     pass
