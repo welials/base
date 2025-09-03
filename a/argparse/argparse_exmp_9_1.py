@@ -26,7 +26,6 @@ parser.parse_args(['spam', 'badger'])
 usage: PROG [-h] [--foo FOO] [bar]
 PROG: error: extra arguments found: badger
 """
-хлам, [03.09.2025 10:34]
 # Arguments containing -
 """
 The parse_args() method attempts to give errors whenever the user has clearly made a mistake, but some situations are inherently ambiguous. For example, the command-line argument -1 could either be an attempt to specify an option or an attempt to provide a positional argument. The parse_args() method is cautious here: positional arguments may only begin with - if they look like negative numbers and there are no options in the parser that look like negative numbers:
@@ -78,7 +77,6 @@ parser.parse_args(['--', '-f'])
 Namespace(foo='-f', one=None)
 """
 
-хлам, [03.09.2025 10:45]
 # Argument abbreviations (prefix matching)
 """
 The parse_args() method by default allows long options to be abbreviated to a prefix, if the abbreviation is unambiguous (the prefix matches a unique option):
@@ -103,7 +101,6 @@ PROG: error: ambiguous option: -ba could match -badger, -bacon
 An error is produced for arguments that could produce more than one options. This feature can be disabled by setting allow_abbrev to False.
 """
 
-хлам, [03.09.2025 10:51]
 # Beyond sys.argv
 """
 Sometimes it may be useful to have an ArgumentParser parse arguments other than those of sys.argv. This can be accomplished by passing a list of strings to parse_args(). This is useful for testing at the interactive prompt:
@@ -124,7 +121,6 @@ parser.parse_args(['1', '2', '3', '4', '--sum'])
 Namespace(accumulate=<built-in function sum>, integers=[1, 2, 3, 4])
 """
 
-хлам, [03.09.2025 10:56]
 
 # The Namespace object
 """
