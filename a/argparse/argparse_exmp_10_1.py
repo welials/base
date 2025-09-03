@@ -97,8 +97,9 @@ positional arguments:
 
 options:
   -h, --help  show this help message and exit
-
-parser.parse_args(['b', '--help'])
+"""
+print(parser.parse_args(['b', '--help']))
+"""
 usage: PROG b [-h] [--baz {X,Y,Z}]
 
 options:
