@@ -10,20 +10,20 @@ parser.add_argument('--foo', type=int)
 parser.add_argument('bar', nargs='?')
 
 # invalid type
-parser.parse_args(['--foo', 'spam'])
+print(parser.parse_args(['--foo', 'spam']))
 """
 usage: PROG [-h] [--foo FOO] [bar]
 PROG: error: argument --foo: invalid int value: 'spam'
 """
 # invalid option
-parser.parse_args(['--bar'])
+print(parser.parse_args(['--bar']))
 """
 usage: PROG [-h] [--foo FOO] [bar]
 PROG: error: no such option: --bar
 """
 
 # wrong number of arguments
-parser.parse_args(['spam', 'badger'])
+print(parser.parse_args(['spam', 'badger']))
 """
 usage: PROG [-h] [--foo FOO] [bar]
 PROG: error: extra arguments found: badger
@@ -42,13 +42,13 @@ parser.add_argument('-x')
 parser.add_argument('foo', nargs='?')
 
 # no negative number options, so -1 is a positional argument
-parser.parse_args(['-x', '-1'])
+print(parser.parse_args(['-x', '-1']))
 """
 Namespace(foo=None, x='-1')
 """
 
 # no negative number options, so -1 and -5 are positional arguments
-parser.parse_args(['-x', '-1', '-5'])
+print(parser.parse_args(['-x', '-1', '-5']))
 """
 Namespace(foo='-5', x='-1')
 """
@@ -59,18 +59,18 @@ parser.add_argument('foo', nargs='?')
 
 # negative number options present, so -1 is an option
 
-parser.parse_args(['-1', 'X'])
+print(parser.parse_args(['-1', 'X']))
 """
 Namespace(foo=None, one='X')
 """
 # negative number options present, so -2 is an option
-parser.parse_args(['-2'])
+print(parser.parse_args(['-2']))
 """
 usage: PROG [-h] [-1 ONE] [foo]
 PROG: error: no such option: -2
 """
 # negative number options present, so both -1s are options
-parser.parse_args(['-1', '-1'])
+print(parser.parse_args(['-1', '-1']))
 """
 usage: PROG [-h] [-1 ONE] [foo]
 PROG: error: argument -1: expected one argument
@@ -79,7 +79,7 @@ PROG: error: argument -1: expected one argument
 If you have positional arguments that must begin with - and don’t look like negative numbers, 
 you can insert the pseudo-argument '--' which tells parse_args() that everything after that is a positional argument:
 """
-parser.parse_args(['--', '-f'])
+print(parser.parse_args(['--', '-f']))
 """
 Namespace(foo='-f', one=None)
 """
@@ -92,15 +92,15 @@ if the abbreviation is unambiguous (the prefix matches a unique option):
 parser = argparse.ArgumentParser(prog='PROG')
 parser.add_argument('-bacon')
 parser.add_argument('-badger')
-parser.parse_args('-bac MMM'.split())
+print(parser.parse_args('-bac MMM'.split()))
 """
 Namespace(bacon='MMM', badger=None)
 """
-parser.parse_args('-bad WOOD'.split())
+print(parser.parse_args('-bad WOOD'.split()))
 """
 Namespace(bacon=None, badger='WOOD')
 """
-parser.parse_args('-ba BA'.split())
+print(parser.parse_args('-ba BA'.split()))
 """
 usage: PROG [-h] [-bacon BACON] [-badger BADGER]
 PROG: error: ambiguous option: -ba could match -badger, -bacon
@@ -122,11 +122,11 @@ parser.add_argument(
 parser.add_argument(
     '--sum', dest='accumulate', action='store_const', const=sum,
     default=max, help='sum the integers (default: find the max)')
-parser.parse_args(['1', '2', '3', '4'])
+print(parser.parse_args(['1', '2', '3', '4']))
 """
 Namespace(accumulate=<built-in function max>, integers=[1, 2, 3, 4])
 """
-parser.parse_args(['1', '2', '3', '4', '--sum'])
+print(parser.parse_args(['1', '2', '3', '4', '--sum']))
 """
 Namespace(accumulate=<built-in function sum>, integers=[1, 2, 3, 4])
 """
@@ -143,7 +143,7 @@ If you prefer to have dict-like view of the attributes, you can use the standard
 parser = argparse.ArgumentParser()
 parser.add_argument('--foo')
 args = parser.parse_args(['--foo', 'BAR'])
-vars(args)
+print(vars(args))
 """
 {'foo': 'BAR'}
 """
@@ -157,8 +157,8 @@ class C:
 c = C()
 parser = argparse.ArgumentParser()
 parser.add_argument('--foo')
-parser.parse_args(args=['--foo', 'BAR'], namespace=c)
-c.foo
+print(parser.parse_args(args=['--foo', 'BAR'], namespace=c))
+print(c.foo)
 """
 'BAR'
 """
