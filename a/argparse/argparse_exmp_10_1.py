@@ -47,11 +47,11 @@ parser_b = subparsers.add_parser('b', help='b help')
 parser_b.add_argument('--baz', choices=('X', 'Y', 'Z'), help='baz help')
 
 # parse some argument lists
-parser.parse_args(['a', '12'])
+print(parser.parse_args(['a', '12']))
 """
 Namespace(bar=12, foo=False)
 """
-parser.parse_args(['--foo', 'b', '--baz', 'Z'])
+print(parser.parse_args(['--foo', 'b', '--baz', 'Z']))
 """
 Namespace(baz='Z', foo=True)
 """
@@ -60,11 +60,6 @@ Note that the object returned by parse_args() will only contain attributes for t
 parser and the subparser that was selected by the command line (and not any other subparsers). 
 So in the example above, when the a command is specified, only the foo and bar attributes are present, 
 and when the b command is specified, only the foo and baz attributes are present.
-"""
-
-
-"""
-+
 
 Note that the object returned by parse_args() will only contain attributes for the main parser and the 
 subparser that was selected by the command line (and not any other subparsers). So in the example above, 
@@ -78,7 +73,7 @@ The help message will not include parent parser or sibling parser messages.
 can be given by supplying the help= argument to add_parser() as above.)
 
 """
-parser.parse_args(['--help'])
+print(parser.parse_args(['--help']))
 
 """
 usage: PROG [-h] [--foo] {a,b} ...
@@ -93,7 +88,7 @@ options:
   --foo   foo help
 """
 
-parser.parse_args(['a', '--help'])
+print(parser.parse_args(['a', '--help']))
 """
 usage: PROG a [-h] bar
 
