@@ -11,7 +11,7 @@ subparsers = parser.add_subparsers(title='subcommands',
                                    help='additional help')
 subparsers.add_parser('foo')
 subparsers.add_parser('bar')
-parser.parse_args(['-h'])
+print(parser.parse_args(['-h']))
 """
 usage:  [-h] {foo,bar} ...
 
@@ -23,17 +23,17 @@ subcommands:
 
   {foo,bar}   additional help
 """
+
 """
 Furthermore, add_parser() supports an additional aliases argument, 
 which allows multiple strings to refer to the same subparser. 
 This example, like svn, aliases co as a shorthand for checkout:
 """
-
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers()
 checkout = subparsers.add_parser('checkout', aliases=['co'])
 checkout.add_argument('foo')
-parser.parse_args(['co', 'bar'])
+print(parser.parse_args(['co', 'bar']))
 """
 Namespace(foo='bar')
 """
@@ -41,21 +41,20 @@ Namespace(foo='bar')
 add_parser()поддерживает также дополнительный устаревший аргумент, позволяющий отменить подпарсер.
 """
 
-import argparse
 parser = argparse.ArgumentParser(prog='chicken.py')
 subparsers = parser.add_subparsers()
 run = subparsers.add_parser('run')
 fly = subparsers.add_parser('fly', deprecated=True)
-parser.parse_args(['fly'])
+print(parser.parse_args(['fly']))
 """
 chicken.py: warning: command 'fly' is deprecated
 Namespace()
 """
+
 """
 One particularly effective way of handling subcommands is to combine the use of the add_subparsers() 
 method with calls to set_defaults() so that each subparser knows which Python function it should execute. For example:
 """
-
 # subcommand functions
 def foo(args):
     print(args.x * args.y)
@@ -80,13 +79,13 @@ parser_bar.set_defaults(func=bar)
 
 # parse the args and call whatever function was selected
 args = parser.parse_args('foo 1 -x 2'.split())
-args.func(args)
+print(args.func(args))
 """
 2.0
 """
 # parse the args and call whatever function was selected
 args = parser.parse_args('bar XYZYX'.split())
-args.func(args)
+print(args.func(args))
 """
 ((XYZYX))
 """
@@ -104,7 +103,7 @@ subparser1 = subparsers.add_parser('1')
 subparser1.add_argument('-x')
 subparser2 = subparsers.add_parser('2')
 subparser2.add_argument('y')
-parser.parse_args(['2', 'frobble'])
+print(parser.parse_args(['2', 'frobble']))
 """
 Namespace(subparser_name='2', y='frobble')
 """
