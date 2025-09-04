@@ -10,7 +10,7 @@ buffer sizes, encodings and error handling (see the open() function for more det
 parser = argparse.ArgumentParser()
 parser.add_argument('--raw', type=argparse.FileType('wb', 0))
 parser.add_argument('out', type=argparse.FileType('w', encoding='UTF-8'))
-print(pparser.parse_args(['--raw', 'raw.dat', 'file.txt']))
+print(parser.parse_args(['--raw', 'raw.dat', 'file.txt']))
 """
 Namespace(out=<_io.TextIOWrapper name='file.txt' mode='w' encoding='UTF-8'>, raw=<_io.FileIO name='raw.dat' mode='wb'>)
 """
