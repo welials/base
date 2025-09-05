@@ -1,39 +1,20 @@
 import argparse
 
-# Parser defaults
+# Printing help
 """
-ArgumentParser.set_defaults(**kwargs)
-Most of the time, the attributes of the object returned by parse_args() will be fully determined 
-by inspecting the command-line arguments and the argument actions. set_defaults() 
-allows some additional attributes that are determined without any inspection of the command line to be added:
-"""
-parser = argparse.ArgumentParser()
-parser.add_argument('foo', type=int)
-parser.set_defaults(bar=42, baz='badger')
-print(parser.parse_args(['736']))
-"""
-Namespace(bar=42, baz='badger', foo=736)
-"""
+In most typical applications, parse_args() will take care of formatting and printing any usage or error messages. However, several formatting methods are available:
 
-"""
-Note that parser-level defaults always override argument-level defaults:
-"""
-parser = argparse.ArgumentParser()
-parser.add_argument('--foo', default='bar')
-parser.set_defaults(foo='spam')
-print(parser.parse_args([]))
-"""
-Namespace(foo='spam')
-"""
+ArgumentParser.print_usage(file=None)
+Print a brief description of how the ArgumentParser should be invoked on the command line. If file is None, sys.stdout is assumed.
 
-"""
-Parser-level defaults can be particularly useful when working with multiple parsers. See the add_subparsers() method for an example of this type.
-ArgumentParser.get_default(dest)
-Get the default value for a namespace attribute, as set by either add_argument() or by set_defaults():
-"""
-parser = argparse.ArgumentParser()
-parser.add_argument('--foo', default='badger')
-print(parser.get_default('foo'))
-"""
-'badger'
+ArgumentParser.print_help(file=None)
+Print a help message, including the program usage and information about the arguments registered with the ArgumentParser. If file is None, sys.stdout is assumed.
+
+There are also variants of these methods that simply return a string instead of printing it:
+
+ArgumentParser.format_usage()
+Return a string containing a brief description of how the ArgumentParser should be invoked on the command line.
+
+ArgumentParser.format_help()
+Return a string containing a help message, including the program usage and information about the arguments registered with the ArgumentParser.
 """
