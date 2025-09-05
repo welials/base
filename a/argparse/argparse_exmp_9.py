@@ -1,20 +1,48 @@
 import argparse
-# deprecated
+
 """
-During a project’s lifetime, some arguments may need to be removed from the command line. 
-Before removing them, you should inform your users that the arguments are deprecated and will be removed. 
-The deprecated keyword argument of add_argument(), which defaults to False, 
-specifies if the argument is deprecated and will be removed in the future. 
-For arguments, if deprecated is True, then a warning will be printed to sys.stderr when the argument is used:
+class argparse.BooleanOptionalAction
+A subclass of Action for handling boolean flags with positive and negative options. 
+Adding a single argument such as --foo automatically creates both --foo and --no-foo options, storing True and False respectively:
 """
-parser = argparse.ArgumentParser(prog='snake.py')
-parser.add_argument('--legs', default=0, type=int, deprecated=True)
-print(parser.parse_args([]))
+parser = argparse.ArgumentParser()
+parser.add_argument('--foo', action=argparse.BooleanOptionalAction)
+print(parser.parse_args(['--no-foo']))
 """
-Namespace(legs=0)
+Namespace(foo=False)
 """
-print(parser.parse_args(['--legs', '4']))
 """
-snake.py: warning: option '--legs' is deprecated
-Namespace(legs=4)
+Option value syntax
+The parse_args() method supports several ways of specifying the value of an option (if it takes one). In the simplest case, the option and its value are passed as two separate arguments:
 """
+parser = argparse.ArgumentParser(prog='PROG')
+parser.add_argument('-x')
+parser.add_argument('--foo')
+parser.parse_args(['-x', 'X'])
+"""
+Namespace(foo=None, x='X')
+"""
+print(parser.parse_args(['--foo', 'FOO']))
+"""
+Namespace(foo='FOO', x=None)
+For long options (options with names longer than a single character), the option and value can also be passed as a single command-line argument, using = to separate them:
+"""
+print(parser.parse_args(['--foo=FOO']))
+"""
+Namespace(foo='FOO', x=None)
+For short options (options only one character long), the option and its value can be concatenated:
+"""
+print(parser.parse_args(['-xX']))
+"""
+Namespace(foo=None, x='X')
+Several short options can be joined together, using only a single - prefix, as long as only the last option (or none of them) requires a value:
+"""
+parser = argparse.ArgumentParser(prog='PROG')
+parser.add_argument('-x', action='store_true')
+parser.add_argument('-y', action='store_true')
+parser.add_argument('-z')
+print(parser.parse_args(['-xyzZ']))
+"""
+Namespace(x=True, y=True, z='Z')
+"""
+
