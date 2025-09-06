@@ -1,14 +1,14 @@
-from array import array, typecode
+import array
 
-print(array('l'))
-print(array('w', 'hello \u2641'))
-print(array('l', [1, 2, 3, 4, 5]))
+print(array.array('l'))
+print(array.array('w', 'hello \u2641'))
+print(array.array('l', [1, 2, 3, 4, 5]))
 print(('d', [1.0, 2.0, 3.14]))
 """
 array.typecode:
 Свойство array.typecode возвращает символ typecode, используемый для создания массива array.
 """
-arr = array('i', range(3))
+arr = array.array('i', range(3))
 
 print(arr.typecode)
 # 'i'
@@ -19,14 +19,15 @@ print(arr)
 array.itemsize:
 Свойство array.itemsize возвращает длину в байтах одного элемента массива array во внутреннем представлении.
 """
-arr = array('i', range(3))
-arr.itemsize
+arr = array.array('i', range(3))
+print(arr.itemsize)
 # 4
-arr
+print(arr)
 # array('i', [0, 1, 2])
-
+"""
 array.append(x):
 Метод array.append() добавляет новый элемент со значением x в конец массива array.
+"""
 
 >>> import array
 >>> arr = array.array('i', range(3))
