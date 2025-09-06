@@ -227,7 +227,7 @@ print(arr.tolist())
 array.tounicode():
 Метод array.tounicode() преобразует массив array в строку Unicode. Массив должен быть массивом типа 'u'. В противном случае возникает ошибка ValueError. Используйте array.tobytes().decode(enc) для получения строки Unicode из массива другого типа.
 """
->>> import array
->>> arr = array.array('u', 'the string')
->>> arr.tounicode()
+
+arr = array.array('u', 'the string')
+print(arr.tounicode())
 # 'the string'
