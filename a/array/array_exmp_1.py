@@ -59,7 +59,7 @@ print(arr.buffer_info())
 
 # Размер буфера памяти
 size_buf = arr.itemsize * arr.buffer_info()[1]
->>> size_buf
+print(size_buf)
 # 16
 """
 array.byteswap():
@@ -67,27 +67,25 @@ array.byteswap():
 
 Метод array.byteswap() полезно использовать при чтении данных из файла, записанного на машине с другим порядком байтов.
 """
->>> import array
->>> arr = array.array('i', range(4))
->>> arr
+
+arr = array.array('i', range(4))
+print(arr)
 # array('i', [0, 1, 2, 3])
 
->>> arr.byteswap()
->>> arr
+arr.byteswap()
+print(arr)
 # array('i', [0, 16777216, 33554432, 50331648])
 """
 array.count(x):
 Метод array.count() вернет количество вхождений аргумента x в массиве array.
 """
->>> import array
->>> arr = array.array('i', range(4))
->>> arr.extend([1,1])
->>> arr.count(1)
+arr = array.array('i', range(4))
+arr.extend([1,1])
+print(arr.count(1))
 # 3
 
->>> arr
+print(arr)
 # array('i', [0, 1, 2, 3, 1, 1])
-
 
 """
 array.extend(iterable):
@@ -95,19 +93,18 @@ array.extend(iterable):
 
 Если iterable - это другой массив array, он должен иметь точно такой же typecode. Если typecode другой, то появится исключение TypeError. Если iterable не является массивом array, то он должен быть повторяемым, а его элементы должны иметь правильный тип для добавления в массив.
 """
->>> import array
->>> arr = array.array('i', range(4))
->>> arr.extend([10,11])
->>> arr
+arr = array.array('i', range(4))
+arr.extend([10,11])
+print(arr)
 # array('i', [0, 1, 2, 3, 10, 11])
 """
 array.frombytes(s):
 Метод array.frombytes() добавляет элементы из строки, интерпретируя строку как массив машинных значений. Как если бы она была прочитана из файла с помощью метода array.fromfile().
 """
->>> import array
->>> arr = array.array('i', range(4))
->>> line = arr.tobytes()
->>> line
+
+arr = array.array('i', range(4))
+line = arr.tobytes()
+print(line)
 # b'\x00\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00'
 
 >>> arr1 = array.array('i')
