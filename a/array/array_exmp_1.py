@@ -107,9 +107,9 @@ line = arr.tobytes()
 print(line)
 # b'\x00\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00'
 
->>> arr1 = array.array('i')
->>> arr1.frombytes(line)
->>> arr1
+arr1 = array.array('i')
+arr1.frombytes(line)
+print(arr1)
 # array('i', [0, 1, 2, 3])
 """
 array.fromfile(fp, n):
@@ -123,10 +123,10 @@ array.fromfile(fp, n):
 array.fromlist(list):
 Метод array.fromlist() добавляет элементы массив array из списка list. Это эквивалентно добавлению x в список array.append(x), за исключением того, что в случае ошибки типа массив array не изменяется.
 """
->>> import array
->>> arr = array.array('i', range(2))
->>> arr.fromlist([10,20,30,40])
->>> arr
+
+arr = array.array('i', range(2))
+arr.fromlist([10,20,30,40])
+print(arr)
 # array('i', [0, 1, 10, 20, 30, 40])
 """
 array.fromunicode(s):
@@ -134,13 +134,13 @@ array.fromunicode(s):
 
 Используйте array.frombytes(unicodestring.encode(enc)), чтобы добавить данные Unicode в массив другого типа.
 """
->>> import array
->>> arr = array.array('u', 'string')
->>> arr
+
+arr = array.array('u', 'string')
+print(arr)
 # array('u', 'string')
 
->>> arr.fromunicode('string2')
->>> arr
+arr.fromunicode('string2')
+print(arr)
 # array('u', 'stringstring2')
 """
 array.index(x[, start[, stop]]):
@@ -148,68 +148,67 @@ array.index(x[, start[, stop]]):
 
 Необязательные аргументы start и stop (доступны с Python 3.10) могут быть указаны для поиска x в части массива. Поднимает ValueError, если x не найден.
 """
->>> import array
->>> arr = array.array('i', range(3))
->>> arr.fromlist([1, 1, 4])
->>> arr.index(1)
+
+arr = array.array('i', range(3))
+arr.fromlist([1, 1, 4])
+print(arr.index(1))
 # 1
 
->>> arr
-array('i', [0, 1, 2, 1, 1, 4])
+print(arr)
+# array('i', [0, 1, 2, 1, 1, 4])
 
 """
 array.insert(i, x):
 Метод array.insert() вставляет новый элемент со значением x в массив array перед позицией i. Отрицательные значения рассматриваются как относящиеся к концу массива.
 """
->>> import array
->>> arr = array.array('i', range(3))
->>> arr
+
+arr = array.array('i', range(3))
+print(arr)
 # array('i', [0, 1, 2])
 
->>> arr.insert(1, 2)
->>> arr
+arr.insert(1, 2)
+print(arr)
 # array('i', [0, 2, 1, 2])
 """
 array.pop([i]):
 Метод array.pop() удаляет элемент с индексом i из массива array и возвращает его. Необязательный аргумент индекса i массива array по умолчанию равен -1. По умолчанию удаляется и возвращается последний элемент массива array.
 """
->>> import array
->>> arr = array.array('i', range(2,6))
->>> arr.pop()
+
+arr = array.array('i', range(2,6))
+print(arr.pop())
 # 5
->>> arr.pop(1)
+print(arr.pop(1))
 # 3
->>> arr
+print(arr)
 # array('i', [2, 4])
 """
 array.remove(x):
 Метод array.remove() удаляет первое вхождение значения аргумента x из массива array.
 """
->>> import array
->>> arr = array.array('i', range(2,6))
->>> arr.fromlist([3, 3])
->>> arr
+
+arr = array.array('i', range(2,6))
+arr.fromlist([3, 3])
+print(arr)
 # array('i', [2, 3, 4, 5, 3, 3])
->>> arr.remove(3)
->>> arr
-array('i', [2, 4, 5, 3, 3])
+arr.remove(3)
+print(arr)
+# array('i', [2, 4, 5, 3, 3])
 """
 array.reverse():
 Метод array.reverse() переворачивает массив array. Другими словами обеспечивает обратный порядок элементов в массиве.
 """
->>> import array
->>> arr = array.array('i', range(2,6))
->>> arr.reverse()
->>> arr
+
+arr = array.array('i', range(2,6))
+arr.reverse()
+print(arr)
 # array('i', [5, 4, 3, 2])
 """
 array.tobytes():
 Метод array.tobytes() преобразует массив array в массив машинных значений и вернет представление байтов - ту же последовательность байтов, которая была бы записана в файл методом array.tofile().
 """
->>> import array
->>> arr = array.array('i', range(4))
->>> line = arr.tobytes()
->>> line
+arr = array.array('i', range(4))
+line = arr.tobytes()
+print(line)
 # b'\x00\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00'
 """
 array.tofile(fp):
@@ -221,9 +220,8 @@ array.tofile(fp):
 array.tolist():
 Метод array.tolist() преобразует массив array в обычный список с теми же элементами.
 """
->>> import array
->>> arr = array.array('i', range(4))
->>> arr.tolist()
+arr = array.array('i', range(4))
+print(arr.tolist())
 # [0, 1, 2, 3]
 """
 array.tounicode():
