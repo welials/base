@@ -2,20 +2,24 @@ import array
 
 
 """
-'b' подписанный символ инт
-'B' беззнаковый символ инт
-'u' wchar_t символ Юникода
-'w' Py_UCS4 символ Юникода
-'h' подписано коротко инт
-'H' беззнаковый короткий инт
-'i' подписанный инт 
-'I' беззнаковое целое инт
-'l' подписано долго инт
-'L' беззнаковый длинный инт
-'q' подписано долго долго инт
-'Q' беззнаковый длинный длинный инт
-'f' плавать плавать
-'d' double float
+      C++                  Python
+'b' signed char        --> int
+'B' unsigned char      --> int
+'u' wchar_t            --> Unicode character
+'w' Py_UCS4            --> Unicode character
+'h' signed short       --> int
+'H' unsigned short     --> int
+'i' signed int         --> int 
+'I' unsigned int       --> int
+'l' signed long        --> int
+'L' unsigned long      --> int
+'q' signed long long   --> int
+'Q' unsigned long long --> int
+'f' float              --> float
+'d' double             --> float
+"""
+"""
+Пример проверки
 """
 print(array.array('l'))
 print(array.array('w', 'hello \u2641'))
