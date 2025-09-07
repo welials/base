@@ -10,7 +10,8 @@ print(arr)
 # array('i', [5, 4, 3, 2])
 """
 array.tobytes():
-Метод array.tobytes() преобразует массив array в массив машинных значений и вернет представление байтов - ту же последовательность байтов, которая была бы записана в файл методом array.tofile().
+Метод array.tobytes() преобразует массив array в массив машинных значений и вернет представление байтов - 
+ту же последовательность байтов, которая была бы записана в файл методом array.tofile().
 """
 arr = array.array('i', range(4))
 line = arr.tobytes()
@@ -20,9 +21,6 @@ print(line)
 array.tofile(fp):
 Метод array.tofile() записывает все элементы массива array (как машинные значения) в объект файла fp.
 
-Смотрите пример использования в разделе "Сохранение/чтение массива array() в/из файл(а)".
-
-
 array.tolist():
 Метод array.tolist() преобразует массив array в обычный список с теми же элементами.
 """
@@ -31,9 +29,13 @@ print(arr.tolist())
 # [0, 1, 2, 3]
 """
 array.tounicode():
-Метод array.tounicode() преобразует массив array в строку Unicode. Массив должен быть массивом типа 'u'. В противном случае возникает ошибка ValueError. Используйте array.tobytes().decode(enc) для получения строки Unicode из массива другого типа.
+Метод array.tounicode() преобразует массив array в строку Unicode. 
+Массив должен быть массивом типа 'u'. В противном случае возникает ошибка ValueError. 
+Используйте array.tobytes().decode(enc) для получения строки Unicode из массива другого типа.
 """
-
-arr = array.array('u', 'the string')
-print(arr.tounicode())
-# 'the string'
+# DeprecationWarning
+# arr = array.array('u', 'the string')
+# arr = array.array('u', 'string')
+# arr.tounicode()
+arr = array.array('w', 'string')
+arr.tounicode()

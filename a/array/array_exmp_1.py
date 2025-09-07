@@ -5,7 +5,7 @@ import array
       C++                  Python
 'b' signed char        --> int
 'B' unsigned char      --> int
-'u' wchar_t            --> Unicode character
+'u' wchar_t            --> Unicode character DeprecationWarning 
 'w' Py_UCS4            --> Unicode character
 'h' signed short       --> int
 'H' unsigned short     --> int
