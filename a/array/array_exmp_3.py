@@ -7,7 +7,7 @@ array.fromunicode(s):
 Используйте array.frombytes(unicodestring.encode(enc)), чтобы добавить данные Unicode в массив другого типа.
 """
 
-arr = array.array('u', 'string')
+arr = array.array('w', 'string') # u - DeprecationWarning arr = array.array('u', 'string')
 print(arr)
 # array('u', 'string')
 
