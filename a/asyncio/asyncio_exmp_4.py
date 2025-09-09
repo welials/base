@@ -11,10 +11,38 @@ If name is not None, it is set as the name of the task using Task.set_name().
 
 An optional keyword-only context argument allows specifying a custom contextvars.Context for the coro to run in. The current context copy is created when no context is provided.
 
-The task is executed in the loop returned by get_running_loop(), RuntimeError is raised if there is no running loop in current thread.
-Save a reference to the result of this function, to avoid a task disappearing mid-execution. The event loop only keeps weak references to tasks. A task that isn’t referenced elsewhere may get garbage collected at any time, even before it’s done. For reliable “fire-and-forget” background tasks, gather them in a collection:
+The task is executed in the loop returned by get_running_loop(), RuntimeError is raised if there 
+is no running loop in current thread.
+Save a reference to the result of this function, to avoid a task disappearing mid-execution. 
+The event loop only keeps weak references to tasks. A task that isn’t referenced elsewhere may get 
+garbage collected at any time, even before it’s done. 
+For reliable “fire-and-forget” background tasks, gather them in a collection:
+
+Примечание asyncio.TaskGroup.create_task()— это новая альтернатива, использующая структурный параллелизм; 
+она позволяет ожидать группу связанных задач с надежными гарантиями безопасности.
+Важный Сохраните ссылку на результат этой функции, чтобы задача не исчезла во время выполнения. 
+Цикл событий сохраняет только слабые ссылки на задачи. Задача, на которую нет ссылок где-либо ещё, 
+может быть удалена сборщиком мусора в любой момент, даже до её завершения. Для надёжных фоновых задач, 
+работающих по принципу «запустил и забыл»
+
+Exemple: # no work
+
+background_tasks = set()
+
+for i in range(10):
+    task = asyncio.create_task(some_coro(param=i))
+
+    # Add task to the set. This creates a strong reference.
+    background_tasks.add(task)
+
+    # To prevent keeping references to finished tasks forever,
+    # make each task remove its own reference from the set after
+    # completion:
+    task.add_done_callback(background_tasks.discard)
 """
-# add_done_callback ???????
+
+print("#1")
+
 background_tasks = set()
 
 async def main():
@@ -49,6 +77,44 @@ async def main():
 
 asyncio.run(main())
 print(background_tasks)
+"""
+Метод add_done_callback()в Python в основном используется с объектами, «подобными будущим», такими как asyncio.Taskили concurrent.futures.Future, для регистрации вызываемого объекта (функции или метода), который будет выполнен после завершения связанной задачи или будущего.
+Цель:
+Асинхронные операции:
+В асинхронном программировании с помощью asyncioпозволяет add_done_callback()определить действия, которые необходимо предпринять после asyncio.Taskзавершения выполнения, независимо от того, было ли оно успешно завершено, вызвало исключение или было отменено.
+Пулы потоков/процессов:
+При использовании concurrent.futures.ThreadPoolExecutorили позволяет прикрепить к объекту обратный вызов , который будет вызван после завершения задачи ProcessPoolExecutor, отправленной исполнителю.add_done_callback()Future
+Как это работает:
+Прикрепить обратный звонок:
+Вы вызываете add_done_callback()объект Taskor Future, передавая функцию, которую хотите выполнить, в качестве аргумента.
+Исполнение по завершении:
+Когда функция Taskили Futureпереходит в состояние «выполнено» (т. е. имеет результат, исключение или отменяется), вызывается зарегистрированная функция обратного вызова.
+Аргумент обратного вызова:
+Функция обратного вызова обычно получает сам Taskобъект Futureв качестве своего единственного аргумента, что позволяет ей проверять результат, исключение или статус отмены.
+Пример с asyncio:
+"""
+
+print("#2")
+async def my_coroutine():
+    await asyncio.sleep(1)
+    return "Coroutine finished!"
+
+def callback_function(task):
+    if task.cancelled():
+        print("Task was cancelled.")
+    elif task.exception():
+        print(f"Task raised an exception: {task.exception()}")
+    else:
+        print(f"Task completed with result: {task.result()}")
+
+async def main():
+    task = asyncio.create_task(my_coroutine())
+    task.add_done_callback(callback_function)
+    await task
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
 
 #
 #
