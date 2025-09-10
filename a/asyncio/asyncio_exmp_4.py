@@ -40,7 +40,6 @@ for i in range(10):
     # completion:
     task.add_done_callback(background_tasks.discard)
 """
-
 print("#1")
 
 background_tasks = set()
