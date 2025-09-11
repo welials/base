@@ -42,6 +42,7 @@ for i in range(10):
 """
 print("#1")
 
+
 background_tasks = set()
 
 async def main():
