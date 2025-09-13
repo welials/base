@@ -1,8 +1,7 @@
-import asyncio
-import random
-import time
+import asyncio, threading, random, time
 from datetime import datetime
 from asyncio import TaskGroup
+
 #
 # # Creating Tasks
 # """
@@ -597,7 +596,6 @@ from asyncio import TaskGroup
 # #     timeout!
 
 
-
 # Waiting Primitives
 
 # """
@@ -757,92 +755,166 @@ from asyncio import TaskGroup
 # # Результаты задачи №1 получены.
 # # Результаты задачи №5 получены.
 # # Результаты задачи №6 получены.
-
-
-# Running in Threads
-
-"""
-async asyncio.to_thread(func, /, *args, **kwargs)
-Asynchronously run function func in a separate thread.
-
-Any *args and **kwargs supplied for this function are directly passed to func. 
-Also, the current contextvars.Context is propagated, 
-allowing context variables from the event loop thread to be accessed in the separate thread.
-
-Return a coroutine that can be awaited to get the eventual result of func.
-
-This coroutine function is primarily intended to be used for executing IO-bound functions/methods 
-that would otherwise block the event loop if they were run in the main thread. For example:
-"""
-def blocking_io():
-    print(f"start blocking_io at {time.strftime('%X')}")
-    # Note that time.sleep() can be replaced with any blocking
-    # IO-bound operation, such as file operations.
-    time.sleep(1)
-    print(f"blocking_io complete at {time.strftime('%X')}")
-
-async def main():
-    print(f"started main at {time.strftime('%X')}")
-
-    await asyncio.gather(
-        asyncio.to_thread(blocking_io),
-        asyncio.sleep(1))
-
-    print(f"finished main at {time.strftime('%X')}")
-
-
-asyncio.run(main())
-
-# Expected output:
 #
-# started main at 19:50:53
-# start blocking_io at 19:50:53
-# blocking_io complete at 19:50:54
-# finished main at 19:50:54
+#
+# # Running in Threads
+#
+# """
+# async asyncio.to_thread(func, /, *args, **kwargs)
+# Asynchronously run function func in a separate thread.
+#
+# Any *args and **kwargs supplied for this function are directly passed to func.
+# Also, the current contextvars.Context is propagated,
+# allowing context variables from the event loop thread to be accessed in the separate thread.
+#
+# Return a coroutine that can be awaited to get the eventual result of func.
+#
+# This coroutine function is primarily intended to be used for executing IO-bound functions/methods
+# that would otherwise block the event loop if they were run in the main thread. For example:
+# """
+#
+#
+# def blocking_io():
+#     print(f"start blocking_io at {time.strftime('%X')}")
+#     # Note that time.sleep() can be replaced with any blocking
+#     # IO-bound operation, such as file operations.
+#     time.sleep(1)
+#     print(f"blocking_io complete at {time.strftime('%X')}")
+#
+#
+# async def main():
+#     print(f"started main at {time.strftime('%X')}")
+#
+#     await asyncio.gather(
+#         asyncio.to_thread(blocking_io),
+#         asyncio.sleep(1))
+#
+#     print(f"finished main at {time.strftime('%X')}")
+#
+#
+# asyncio.run(main())
+#
+# # Expected output:
+# #
+# # started main at 19:50:53
+# # start blocking_io at 19:50:53
+# # blocking_io complete at 19:50:54
+# # finished main at 19:50:54
+#
+# """
+# Directly calling blocking_io() in any coroutine would block the event loop for its duration, resulting in an additional 1 second of run time. Instead, by using asyncio.to_thread(), we can run it in a separate thread without blocking the event loop.
+#
+# Note Due to the GIL, asyncio.to_thread() can typically only be used to make IO-bound functions non-blocking. However, for extension modules that release the GIL or alternative Python implementations that don’t have one, asyncio.to_thread() can also be used for CPU-bound functions.
+# Added in version 3.9.
+# """
+#
+# # Scheduling From Other Threads
+# """
+# asyncio.run_coroutine_threadsafe(coro, loop)
+# Submit a coroutine to the given event loop. Thread-safe.
+#
+# Return a concurrent.futures.Future to wait for the result from another OS thread.
+#
+# This function is meant to be called from a different OS thread than the one where the event loop is running. Example:
+#
+# # Create a coroutine
+#
+# coro = asyncio.sleep(1, result=3)
+#
+# # Submit the coroutine to a given loop
+# future = asyncio.run_coroutine_threadsafe(coro, loop)
+#
+# # Wait for the result with an optional timeout argument
+# assert future.result(timeout) == 3
+# If an exception is raised in the coroutine, the returned Future will be notified.
+# It can also be used to cancel the task in the event loop:
+#
+# try:
+#     result = future.result(timeout)
+# except TimeoutError:
+#     print('The coroutine took too long, cancelling the task...')
+#     future.cancel()
+# except Exception as exc:
+#     print(f'The coroutine raised an exception: {exc!r}')
+# else:
+#     print(f'The coroutine returned: {result!r}')
+#
+# See the concurrency and multithreading section of the documentation.
+#
+# Unlike other asyncio functions this function requires the loop argument to be passed explicitly.
+#
+# Added in version 3.5.1.
+# """
+#
+#
+# async def worker(name, delay):
+#     """
+#     Асинхронная функция, которую будем запускать
+#     в основном и отдельном потоке
+#     """
+#     # получаем имя потока
+#     th_name = threading.current_thread().name
+#     print(f'Start {name}; ожидание {delay}; поток: {th_name}')
+#     res = await asyncio.sleep(delay, result=delay)
+#     print(f'Done {name}; ожидание {delay}')
+#     return name, res
+#
+#
+# async def main(new_loop):
+#     # список с будущими результатами
+#     results = []
+#     # запускаем сопрограмму worker('Thread', 1) в цикле событий
+#     # `new_loop` другого потока. Функция `run_coroutine_threadsafe()`
+#     # проталкивает `worker()` в поток с циклом событий `new_loop`
+#     future1 = asyncio.run_coroutine_threadsafe(worker('Thread', 1), new_loop)
+#     # `future1` добавляем в список с результатами
+#     results.append(future1)
+#     # создаем асинхронную задачу в текущем цикле событий
+#     task = asyncio.create_task(worker('Task', 1.5))
+#     # ожидаем результат от асинхронной задачи
+#     future2 = await task
+#     # `future2` добавляем в список с результатами
+#     results.append(future2)
+#
+#     print('\nРезультаты:')
+#     # проходимся по списку с результатами `results`
+#     for future in results:
+#         # результаты потоков и цикла событий не
+#         # совместимы, по этому извлекаем их по разному
+#         if type(future) == tuple:
+#             # результаты цикла событий
+#             print(f'Задача {future[0]}; результат {future[1]}')
+#         else:
+#             # результаты потока
+#             res = future.result()
+#             print(f'Задача {res[0]}; результат {res[1]}')
+#             # останавливаем цикл событий `new_loop`
+#             # в отдельном потоке
+#             new_loop.call_soon_threadsafe(new_loop.stop)
+#
+# # получаем новый цикл событий
+# new_loop = asyncio.new_event_loop()
+# # создаем поток с запущенным новым циклом событий
+# thread = threading.Thread(target=new_loop.run_forever)
+# # запускаем поток
+# thread.start()
+# # Запускаем основной цикл событий и передаем
+# # в точку входа `main()` новый цикл событий `new_loop`
+# # для использования в `run_coroutine_threadsafe()`
+# asyncio.run(main(new_loop))
+#
+#
+# # Start Task; ожидание 1.5; поток: MainThread
+# # Start Thread; ожидание 1; поток: Thread-1
+# # Done Thread; ожидание 1
+# # Done Task; ожидание 1.5
+#
+# # Результаты:
+# # Задача Thread; результат 1
+# # Задача Task; результат 1.5
 
+# Introspection
 """
-Directly calling blocking_io() in any coroutine would block the event loop for its duration, resulting in an additional 1 second of run time. Instead, by using asyncio.to_thread(), we can run it in a separate thread without blocking the event loop.
-
-Note Due to the GIL, asyncio.to_thread() can typically only be used to make IO-bound functions non-blocking. However, for extension modules that release the GIL or alternative Python implementations that don’t have one, asyncio.to_thread() can also be used for CPU-bound functions.
-Added in version 3.9.
-"""
-
-
-# Scheduling From Other Threads
-"""
-asyncio.run_coroutine_threadsafe(coro, loop)
-Submit a coroutine to the given event loop. Thread-safe.
-
-Return a concurrent.futures.Future to wait for the result from another OS thread.
-
-This function is meant to be called from a different OS thread than the one where the event loop is running. Example:
-
-# Create a coroutine
-coro = asyncio.sleep(1, result=3)
-
-# Submit the coroutine to a given loop
-future = asyncio.run_coroutine_threadsafe(coro, loop)
-
-# Wait for the result with an optional timeout argument
-assert future.result(timeout) == 3
-If an exception is raised in the coroutine, the returned Future will be notified. It can also be used to cancel the task in the event loop:
-
-try:
-    result = future.result(timeout)
-except TimeoutError:
-    print('The coroutine took too long, cancelling the task...')
-    future.cancel()
-except Exception as exc:
-    print(f'The coroutine raised an exception: {exc!r}')
-else:
-    print(f'The coroutine returned: {result!r}')
-See the concurrency and multithreading section of the documentation.
-
-Unlike other asyncio functions this function requires the loop argument to be passed explicitly.
-
-Added in version 3.5.1.
-
-Introspection
 asyncio.current_task(loop=None)
 Return the currently running Task instance, or None if no task is running.
 
@@ -861,26 +933,41 @@ asyncio.iscoroutine(obj)
 Return True if obj is a coroutine object.
 
 Added in version 3.4.
+"""
 
-Task Object
+#Task Object
+
+"""
 class asyncio.Task(coro, *, loop=None, name=None, context=None, eager_start=False)
 A Future-like object that runs a Python coroutine. Not thread-safe.
 
-Tasks are used to run coroutines in event loops. If a coroutine awaits on a Future, the Task suspends the execution of the coroutine and waits for the completion of the Future. When the Future is done, the execution of the wrapped coroutine resumes.
+Tasks are used to run coroutines in event loops. If a coroutine awaits on a Future, 
+the Task suspends the execution of the coroutine and waits for the completion of the Future. 
+When the Future is done, the execution of the wrapped coroutine resumes.
 
-Event loops use cooperative scheduling: an event loop runs one Task at a time. While a Task awaits for the completion of a Future, the event loop runs other Tasks, callbacks, or performs IO operations.
+Event loops use cooperative scheduling: an event loop runs one Task at a time. 
+While a Task awaits for the completion of a Future, the event loop runs other Tasks, callbacks, or performs IO operations.
 
-Use the high-level asyncio.create_task() function to create Tasks, or the low-level loop.create_task() or ensure_future() functions. Manual instantiation of Tasks is discouraged.
+Use the high-level asyncio.create_task() function to create Tasks, or the low-level 
+loop.create_task() or ensure_future() functions. Manual instantiation of Tasks is discouraged.
 
-To cancel a running Task use the cancel() method. Calling it will cause the Task to throw a CancelledError exception into the wrapped coroutine. If a coroutine is awaiting on a Future object during cancellation, the Future object will be cancelled.
+To cancel a running Task use the cancel() method. Calling it will cause the Task to throw a 
+CancelledError exception into the wrapped coroutine. If a coroutine is awaiting on a 
+Future object during cancellation, the Future object will be cancelled.
 
-cancelled() can be used to check if the Task was cancelled. The method returns True if the wrapped coroutine did not suppress the CancelledError exception and was actually cancelled.
+cancelled() can be used to check if the Task was cancelled. 
+The method returns True if the wrapped coroutine did not suppress the CancelledError exception and was actually cancelled.
 
 asyncio.Task inherits from Future all of its APIs except Future.set_result() and Future.set_exception().
 
-An optional keyword-only context argument allows specifying a custom contextvars.Context for the coro to run in. If no context is provided, the Task copies the current context and later runs its coroutine in the copied context.
+An optional keyword-only context argument allows specifying 
+a custom contextvars.Context for the coro to run in. If no context is provided, 
+the Task copies the current context and later runs its coroutine in the copied context.
 
-An optional keyword-only eager_start argument allows eagerly starting the execution of the asyncio.Task at task creation time. If set to True and the event loop is running, the task will start executing the coroutine immediately, until the first time the coroutine blocks. If the coroutine returns or raises without blocking, the task will be finished eagerly and will skip scheduling to the event loop.
+An optional keyword-only eager_start argument allows eagerly starting the execution of the asyncio.
+Task at task creation time. If set to True and the event loop is running, 
+the task will start executing the coroutine immediately, until the first time the coroutine blocks. 
+If the coroutine returns or raises without blocking, the task will be finished eagerly and will skip scheduling to the event loop.
 
 Changed in version 3.7: Added support for the contextvars module.
 
@@ -932,13 +1019,18 @@ See the documentation of Future.remove_done_callback() for more details.
 get_stack(*, limit=None)
 Return the list of stack frames for this Task.
 
-If the wrapped coroutine is not done, this returns the stack where it is suspended. If the coroutine has completed successfully or was cancelled, this returns an empty list. If the coroutine was terminated by an exception, this returns the list of traceback frames.
+If the wrapped coroutine is not done, this returns the stack where it is suspended. 
+If the coroutine has completed successfully or was cancelled, this returns an empty list. 
+If the coroutine was terminated by an exception, this returns the list of traceback frames.
 
 The frames are always ordered from oldest to newest.
 
 Only one stack frame is returned for a suspended coroutine.
 
-The optional limit argument sets the maximum number of frames to return; by default all available frames are returned. The ordering of the returned list differs depending on whether a stack or a traceback is returned: the newest frames of a stack are returned, but the oldest frames of a traceback are returned. (This matches the behavior of the traceback module.)
+The optional limit argument sets the maximum number of frames to return; by default all available frames are returned. 
+The ordering of the returned list differs depending on whether a stack or 
+a traceback is returned: the newest frames of a stack are returned, but the oldest frames 
+of a traceback are returned. (This matches the behavior of the traceback module.)
 
 print_stack(*, limit=None, file=None)
 Print the stack or traceback for this Task.
@@ -985,14 +1077,18 @@ If the Task is already done or cancelled, return False, otherwise, return True.
 
 The method arranges for a CancelledError exception to be thrown into the wrapped coroutine on the next cycle of the event loop.
 
-The coroutine then has a chance to clean up or even deny the request by suppressing the exception with a try … … except CancelledError … finally block. Therefore, unlike Future.cancel(), Task.cancel() does not guarantee that the Task will be cancelled, although suppressing cancellation completely is not common and is actively discouraged. Should the coroutine nevertheless decide to suppress the cancellation, it needs to call Task.uncancel() in addition to catching the exception.
+The coroutine then has a chance to clean up or even deny the request by suppressing 
+the exception with a try … … except CancelledError … finally block. Therefore, unlike Future.cancel(), 
+Task.cancel() does not guarantee that the Task will be cancelled, 
+although suppressing cancellation completely is not common and is actively discouraged. 
+Should the coroutine nevertheless decide to suppress the cancellation, it needs to call Task.uncancel() in addition to catching the exception.
 
 Changed in version 3.9: Added the msg parameter.
 
 Changed in version 3.11: The msg parameter is propagated from cancelled task to its awaiter.
 
 The following example illustrates how coroutines can intercept the cancellation request:
-
+"""
 async def cancel_me():
     print('cancel_me(): before sleep')
 
@@ -1026,6 +1122,7 @@ asyncio.run(main())
 #     cancel_me(): cancel sleep
 #     cancel_me(): after sleep
 #     main(): cancel_me is cancelled now
+"""
 cancelled()
 Return True if the Task is cancelled.
 
