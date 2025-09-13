@@ -257,32 +257,46 @@ Task 2: start
 Task 1: done
 """
 
+# Sleeping
 
-# # Sleeping
-#
-# """
-# async asyncio.sleep(delay, result=None)
-# Block for delay seconds.
-#
-# If result is provided, it is returned to the caller when the coroutine completes.
-#
-# sleep() always suspends the current task, allowing other tasks to run.
-#
-# Setting the delay to 0 provides an optimized path to allow other tasks to run. This can be used by long-running functions to avoid blocking the event loop for the full duration of the function call.
-#
-# Example of coroutine displaying the current date every second for 5 seconds:
-#
-# """
-#
-#
-#
-# async def display_date():
-#     loop = asyncio.get_running_loop()
-#     end_time = loop.time() + 5.0
-#     while True:
-#         print(datetime.now())
-#         if (loop.time() + 1.0) >= end_time:
-#             break
-#         await asyncio.sleep(1)
-#
-# asyncio.run(display_date())
+"""
+async asyncio.sleep(delay, result=None)
+Block for delay seconds.
+
+If result is provided, it is returned to the caller when the coroutine completes.
+
+sleep() always suspends the current task, allowing other tasks to run.
+
+Setting the delay to 0 provides an optimized path to allow other tasks to run. 
+This can be used by long-running functions to avoid blocking the event loop for the full duration of the function call.
+
+Example of coroutine displaying the current date every second for 5 seconds:
+
+"""
+
+print("#6")
+
+async def display_date():
+    loop = asyncio.get_running_loop()
+    end_time = loop.time() + 5.0
+    while True:
+        print(datetime.now())
+        if (loop.time() + 1.0) >= end_time:
+            break
+        await asyncio.sleep(1)
+
+asyncio.run(display_date())
+"""
+2025-09-13 12:06:39.537412
+2025-09-13 12:06:40.538715
+2025-09-13 12:06:41.539435
+2025-09-13 12:06:42.551453
+2025-09-13 12:06:43.554653
+"""
+async def main():
+    result = await asyncio.sleep(0.5, 'done')
+    print(result)
+
+
+asyncio.run(main())
+# done
