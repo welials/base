@@ -20,7 +20,6 @@ async def main():
     print(f"Coroutine received value: {value_from_rock} from rock.")
     return 23
 
-
 coroutine = main()
 intermediate_result = coroutine.send(None)
 print(f"Coroutine paused and returned intermediate value: {intermediate_result}.")
