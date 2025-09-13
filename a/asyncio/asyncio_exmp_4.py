@@ -324,6 +324,7 @@ Example:
 """
 print("#7")
 
+
 async def factorial(name, number):
     f = 1
     for i in range(2, number + 1):
@@ -356,68 +357,104 @@ asyncio.run(main())
 #     Task C: Compute factorial(4), currently i=4...
 #     Task C: factorial(4) = 24
 #     [2, 6, 24]
+
+
+
+# Eager Task Factory
+
 """
-Note If return_exceptions is false, cancelling gather() after it has been marked done won’t cancel any submitted awaitables. For instance, gather can be marked done after propagating an exception to the caller, therefore, calling gather.cancel() after catching an exception (raised by one of the awaitables) from gather won’t cancel any other awaitables.
-Changed in version 3.7: If the gather itself is cancelled, the cancellation is propagated regardless of return_exceptions.
-
-Changed in version 3.10: Removed the loop parameter.
-
-Deprecated since version 3.10: Deprecation warning is emitted if no positional arguments are provided or not all positional arguments are Future-like objects and there is no running event loop.
-
-Eager Task Factory
 asyncio.eager_task_factory(loop, coro, *, name=None, context=None)
 A task factory for eager task execution.
 
-When using this factory (via loop.set_task_factory(asyncio.eager_task_factory)), coroutines begin execution synchronously during Task construction. Tasks are only scheduled on the event loop if they block. This can be a performance improvement as the overhead of loop scheduling is avoided for coroutines that complete synchronously.
+When using this factory (via loop.set_task_factory(asyncio.eager_task_factory)), 
+coroutines begin execution synchronously during Task construction. Tasks are only scheduled on the event 
+loop if they block. This can be a performance improvement as the overhead of loop scheduling is avoided
+ for coroutines that complete synchronously.
 
-A common example where this is beneficial is coroutines which employ caching or memoization to avoid actual I/O when possible.
+A common example where this is beneficial is coroutines which employ caching or memoization to avoid 
+actual I/O when possible.
 
-Note Immediate execution of the coroutine is a semantic change. If the coroutine returns or raises, the task is never scheduled to the event loop. If the coroutine execution blocks, the task is scheduled to the event loop. This change may introduce behavior changes to existing applications. For example, the application’s task execution order is likely to change.
+Note Immediate execution of the coroutine is a semantic change. If the coroutine returns or raises, 
+the task is never scheduled to the event loop. If the coroutine execution blocks, 
+the task is scheduled to the event loop. This change may introduce behavior changes to existing applications. 
+For example, the application’s task execution order is likely to change.
 Added in version 3.12.
 
 asyncio.create_eager_task_factory(custom_task_constructor)
-Create an eager task factory, similar to eager_task_factory(), using the provided custom_task_constructor when creating a new task instead of the default Task.
+Create an eager task factory, similar to eager_task_factory(), using the provided 
+custom_task_constructor when creating a new task instead of the default Task.
 
-custom_task_constructor must be a callable with the signature matching the signature of Task.__init__. The callable must return a asyncio.Task-compatible object.
+custom_task_constructor must be a callable with the signature matching the signature of 
+Task.__init__. The callable must return a asyncio.Task-compatible object.
 
-This function returns a callable intended to be used as a task factory of an event loop via loop.set_task_factory(factory)).
+This function returns a callable intended to be used as a task factory of an event loop 
+via loop.set_task_factory(factory)).
 
-Added in version 3.12.
+"""
 
-Shielding From Cancellation
+# Shielding From Cancellation
+"""
 awaitable asyncio.shield(aw)
 Protect an awaitable object from being cancelled.
 
 If aw is a coroutine it is automatically scheduled as a Task.
 
 The statement:
+"""
+print("#8-1")
+async def something():
+    print(42)
+    return 42
 
-task = asyncio.create_task(something())
-res = await shield(task)
+async def main():
+    task = asyncio.create_task(something())
+    res = await asyncio.shield(task)
+    print(res)
+
+
+asyncio.run(main())
+"""
 is equivalent to:
+"""
+print("#8-2")
+async def main():
+    res = await something()
+    print(res)
 
-res = await something()
-except that if the coroutine containing it is cancelled, the Task running in something() is not cancelled. From the point of view of something(), the cancellation did not happen. Although its caller is still cancelled, so the “await” expression still raises a CancelledError.
+
+asyncio.run(main())
+
+
+"""
+except that if the coroutine containing it is cancelled, the Task running in something() is not cancelled. 
+From the point of view of something(), the cancellation did not happen. 
+Although its caller is still cancelled, so the “await” expression still raises a CancelledError.
 
 If something() is cancelled by other means (i.e. from within itself) that would also cancel shield().
 
-If it is desired to completely ignore cancellation (not recommended) the shield() function should be combined with a try/except clause, as follows:
+If it is desired to completely ignore cancellation (not recommended) the shield() 
+function should be combined with a try/except clause, as follows:
+"""
+print("#8-3")
+async def main():
+    task = asyncio.create_task(something())
+    try:
+        res = await asyncio.shield(task)
+        print(res)
+    except asyncio.CancelledError:
+        res = None
+        print(res)
 
-task = asyncio.create_task(something())
-try:
-    res = await shield(task)
-except CancelledError:
-    res = None
-Important Save a reference to tasks passed to this function, to avoid a task disappearing mid-execution. The event loop only keeps weak references to tasks. A task that isn’t referenced elsewhere may get garbage collected at any time, even before it’s done.
-Changed in version 3.10: Removed the loop parameter.
+asyncio.run(main())
 
-Deprecated since version 3.10: Deprecation warning is emitted if aw is not Future-like object and there is no running event loop.
+# Timeouts
 
-Timeouts
+"""
 asyncio.timeout(delay)
 Return an asynchronous context manager that can be used to limit the amount of time spent waiting on something.
 
-delay can either be None, or a float/int number of seconds to wait. If delay is None, no time limit will be applied; this can be useful if the delay is unknown when the context manager is created.
+delay can either be None, or a float/int number of seconds to wait. If delay is None, 
+no time limit will be applied; this can be useful if the delay is unknown when the context manager is created.
 
 In either case, the context manager can be rescheduled after creation using Timeout.reschedule().
 
@@ -430,6 +467,13 @@ If long_running_task takes more than 10 seconds to complete, the context manager
 
 Note The asyncio.timeout() context manager is what transforms the asyncio.CancelledError into a TimeoutError, which means the TimeoutError can only be caught outside of the context manager.
 Example of catching TimeoutError:
+"""
+print("#9-1")
+
+async def long_running_task():
+    print("Starting task...")
+    await asyncio.sleep(5)  # Simulate I/O operation
+    print("Task finished.")
 
 async def main():
     try:
@@ -439,6 +483,10 @@ async def main():
         print("The long operation timed out, but we've handled it.")
 
     print("This statement will run regardless.")
+
+
+asyncio.run(main())
+"""
 The context manager produced by asyncio.timeout() can be rescheduled to a different deadline and inspected.
 
 class asyncio.Timeout(when)
@@ -460,21 +508,23 @@ expired() → bool
 Return whether the context manager has exceeded its deadline (expired).
 
 Example:
+"""
+# async def main():
+#     try:
+#         # We do not know the timeout when starting, so we pass ``None``.
+#         async with asyncio.timeout(None) as cm:
+#             # We know the timeout now, so we reschedule it.
+#             new_deadline = asyncio.get_running_loop().time() + 10
+#             cm.reschedule(new_deadline)
+#
+#             await asyncio.long_running_task()
+#     except TimeoutError:
+#         pass
+#
+#     if cm.expired():
+#         print("Looks like we haven't finished on time.")
 
-async def main():
-    try:
-        # We do not know the timeout when starting, so we pass ``None``.
-        async with asyncio.timeout(None) as cm:
-            # We know the timeout now, so we reschedule it.
-            new_deadline = get_running_loop().time() + 10
-            cm.reschedule(new_deadline)
-
-            await long_running_task()
-    except TimeoutError:
-        pass
-
-    if cm.expired():
-        print("Looks like we haven't finished on time.")
+"""
 Timeout context managers can be safely nested.
 
 Added in version 3.11.
@@ -483,20 +533,23 @@ asyncio.timeout_at(when)
 Similar to asyncio.timeout(), except when is the absolute time to stop waiting, or None.
 
 Example:
+"""
+# async def main():
+#     loop = asyncio.get_running_loop()
+#     deadline = loop.time() + 20
+#     try:
+#         async with asyncio.timeout_at(deadline):
+#             await asyncio.long_running_task()
+#     except TimeoutError:
+#         print("The long operation timed out, but we've handled it.")
+#
+#     print("This statement will run regardless.")
 
-async def main():
-    loop = get_running_loop()
-    deadline = loop.time() + 20
-    try:
-        async with asyncio.timeout_at(deadline):
-            await long_running_task()
-    except TimeoutError:
-        print("The long operation timed out, but we've handled it.")
-
-    print("This statement will run regardless.")
+"""
 Added in version 3.11.
 
 async asyncio.wait_for(aw, timeout)
+
 Wait for the aw awaitable to complete with a timeout.
 
 If aw is a coroutine it is automatically scheduled as a Task.
@@ -512,31 +565,29 @@ The function will wait until the future is actually cancelled, so the total wait
 If the wait is cancelled, the future aw is also cancelled.
 
 Example:
-
-async def eternity():
-    # Sleep for one hour
-    await asyncio.sleep(3600)
-    print('yay!')
-
-async def main():
-    # Wait for at most 1 second
-    try:
-        await asyncio.wait_for(eternity(), timeout=1.0)
-    except TimeoutError:
-        print('timeout!')
-
-asyncio.run(main())
-
-# Expected output:
+"""
+# async def eternity():
+#     # Sleep for one hour
+#     await asyncio.sleep(3600)
+#     print('yay!')
 #
-#     timeout!
-Changed in version 3.7: When aw is cancelled due to a timeout, wait_for waits for aw to be cancelled. Previously, it raised TimeoutError immediately.
+# async def main():
+#     # Wait for at most 1 second
+#     try:
+#         await asyncio.wait_for(eternity(), timeout=1.0)
+#     except TimeoutError:
+#         print('timeout!')
+#
+# asyncio.run(main())
+#
+# # Expected output:
+# #
+# #     timeout!
 
-Changed in version 3.10: Removed the loop parameter.
 
-Changed in version 3.11: Raises TimeoutError instead of asyncio.TimeoutError.
 
-Waiting Primitives
+# Waiting Primitives
+"""
 async asyncio.wait(aws, *, timeout=None, return_when=ALL_COMPLETED)
 Run Future and Task instances in the aws iterable concurrently and block until the condition specified by return_when.
 
