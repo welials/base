@@ -36,6 +36,7 @@ intermediate_result = coroutine.send(None)
 print(f"Coroutine paused and returned intermediate value: {intermediate_result}.")
 
 print(f"Resuming coroutine and sending in value: 42.")
+returned_value = None
 try:
     coroutine.send(42)
 except StopIteration as e:
@@ -48,13 +49,14 @@ yield , как обычно, приостанавливает выполнени
 
 Этот фрагмент выводит следующий результат:
 
-Beginning coroutine main().
-Awaiting rock...
-Coroutine paused and returned intermediate value: 7.
-Resuming coroutine and sending in value: 42.
-Rock.__await__ resuming with value: 42.
-Coroutine received value: 42 from rock.
-Coroutine main() finished and provided value: 23.
+# Beginning coroutine main().
+# Awaiting rock...
+# Coroutine paused and returned intermediate value: 7.
+# Resuming coroutine and sending in value: 42.
+# Rock.__await__ resuming with value: 42.
+# Coroutine received value: 42 from rock.
+# Coroutine main() finished and provided value: 23.
+
 Здесь стоит на мгновение остановиться и убедиться, что вы проследили все способы передачи управляющего потока и значений. Было рассмотрено много важных идей, и стоит убедиться, что вы всё хорошо поняли.
 
 Единственный способ передать управление (или фактически передать управление) сопрограмме — это awaitобъекту, yieldнаходящемуся в её __await__методе. Это может показаться вам странным. Вы можете подумать:
