@@ -128,6 +128,14 @@ async def main():
     )
     # asyncio.gather effectively awaits each task in the collection.
     await asyncio.gather(*work_tasks)
+
+
+asyncio.run(main())
+# Beginning asynchronous sleep at time: 07:31:04.
+# I like work. Work work.
+# I like work. Work work.
+# I like work. Work work.
+# Done asynchronous sleep at time: 07:31:07.
 """
 Ниже мы используем будущий объект, чтобы настроить управление моментом, когда задача будет отмечена как выполненная. 
 Если future.set_result()метод, отвечающий за отметку будущего объекта как выполненного, 
