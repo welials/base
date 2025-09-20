@@ -1,5 +1,5 @@
 import asyncio
-import datetime
+import datetime, time
 
 # A conceptual overview part 2: the nuts and bolts
 """
@@ -138,24 +138,8 @@ asyncio.run(main())
 # I like work. Work work.
 # sleep 3
 # Done asynchronous sleep at time: 07:32:26.
-"""
-Ниже мы используем Фьючерсы объект, чтобы настроить управление моментом, когда задача будет отмечена как выполненная. 
-Если future.set_result() метод, отвечающий за отметку будущего объекта как выполненного, 
-никогда не будет вызван, то эта задача никогда не завершится. Мы также заручились помощью другой задачи, 
-которую мы увидим чуть позже, которая будет отслеживать прошедшее время и, соответственно, вызывать future.set_result().
-"""
-async def async_sleep(seconds: float):
-    future = asyncio.Future()
-    time_to_wake = time.time() + seconds
-    # Add the watcher-task to the event loop.
-    watcher_task = asyncio.create_task(_sleep_watcher(future, time_to_wake))
-    # Block until the future is marked as done.
-    await future
 
-"""
-Ниже мы используем довольно простой объект , YieldToEventLoop()чтобы yield передать __await__управление циклу событий. По сути, это то же самое, что вызвать asyncio.sleep(0), но такой подход обеспечивает большую ясность, не говоря уже о том, что это несколько нечестно asyncio.sleepпри демонстрации реализации!
-
-Как обычно, цикл событий циклически проходит через свои задачи, передавая им управление и получая его обратно, когда они приостанавливаются или завершаются. watcher_task, который запускает сопрограмму _sleep_watcher(...), будет вызываться один раз за полный цикл цикла событий. При каждом возобновлении он будет проверять время, и если прошло недостаточно времени, то он снова приостановится и передаст управление обратно циклу событий. В конце концов, когда пройдет достаточно времени, _sleep_watcher(...)будущая задача будет отмечена как выполненная, а затем сама завершится, вырвавшись из бесконечного whileцикла. Учитывая, что эта вспомогательная задача вызывается только один раз за цикл цикла событий, вы будете правы, заметив, что этот асинхронный сон будет спать не менее трех секунд, а не ровно три. Обратите внимание, что это также верно для asyncio.sleep.
+print("#2")
 
 class YieldToEventLoop:
     def __await__(self):
@@ -169,16 +153,111 @@ async def _sleep_watcher(future, time_to_wake):
             break
         else:
             await YieldToEventLoop()
+    print("_sleep_watcher")
+
+
+async def async_sleep_1(seconds: float):
+    future = asyncio.Future()
+    time_to_wake = time.time() + seconds
+    # Add the watcher-task to the event loop.
+    watcher_task = asyncio.create_task(_sleep_watcher(future, time_to_wake))
+    # Block until the future is marked as done.
+    print("async_sleep_1")
+    await future
+
+
+async def other_work():
+    print("I like work. Work work.")
+
+async def main():
+    # Add a few other tasks to the event loop, so there's something
+    # to do while asynchronously sleeping.
+    work_tasks = [
+        asyncio.create_task(other_work()),
+        asyncio.create_task(other_work()),
+        asyncio.create_task(other_work())
+    ]
+    print(
+        "Beginning asynchronous sleep at time: "
+        f"{datetime.datetime.now().strftime("%H:%M:%S")}."
+    )
+    await asyncio.create_task(async_sleep_1(1))
+    print(
+        "Done asynchronous sleep at time: "
+        f"{datetime.datetime.now().strftime("%H:%M:%S")}."
+    )
+    # asyncio.gather effectively awaits each task in the collection.
+    await asyncio.gather(*work_tasks)
+
+
+asyncio.run(main())
+# Beginning asynchronous sleep at time: 07:37:20.
+# I like work. Work work.
+# I like work. Work work.
+# I like work. Work work.
+# ..........
+# async_sleep_1
+# _sleep_watcher
+# Done asynchronous sleep at time: 07:37:23.
+
+"""
+Ниже мы используем Фьючерсы объект, чтобы настроить управление моментом, когда задача будет отмечена как выполненная. 
+Если future.set_result() метод, отвечающий за отметку будущего объекта как выполненного, 
+никогда не будет вызван, то эта задача никогда не завершится. Мы также заручились помощью другой задачи, 
+которую мы увидим чуть позже, которая будет отслеживать прошедшее время и, соответственно, вызывать future.set_result().
+"""
+
+async def async_sleep_2(seconds: float):
+    future = asyncio.Future()
+    time_to_wake = time.time() + seconds
+    # Add the watcher-task to the event loop.
+    watcher_task = asyncio.create_task(_sleep_watcher(future, time_to_wake))
+    # Block until the future is marked as done.
+    await future
+
+"""
+Ниже мы используем довольно простой объект , YieldToEventLoop() чтобы yield передать __await__
+управление циклу событий. По сути, это то же самое, что вызвать asyncio.sleep(0), 
+но такой подход обеспечивает большую ясность, не говоря уже о том, что это несколько нечестно asyncio.sleep
+при демонстрации реализации!
+
+Как обычно, цикл событий циклически проходит через свои задачи, 
+передавая им управление и получая его обратно, когда они приостанавливаются или завершаются. 
+watcher_task, который запускает сопрограмму _sleep_watcher(...), 
+будет вызываться один раз за полный цикл цикла событий. При каждом возобновлении он будет проверять время, 
+и если прошло недостаточно времени, то он снова приостановится и передаст управление обратно циклу событий. 
+В конце концов, когда пройдет достаточно времени, _sleep_watcher(...)будущая задача будет отмечена как выполненная, 
+а затем сама завершится, вырвавшись из бесконечного while цикла. 
+Учитывая, что эта вспомогательная задача вызывается только один раз за цикл цикла событий, 
+вы будете правы, заметив, что этот асинхронный сон будет спать не менее трех секунд, а не ровно три. 
+Обратите внимание, что это также верно для asyncio.sleep.
+"""
+class YieldToEventLoop:
+    def __await__(self):
+        yield
+
+async def _sleep_watcher(future, time_to_wake):
+    while True:
+        if time.time() >= time_to_wake:
+            # This marks the future as done.
+            future.set_result(None)
+            break
+        else:
+            await YieldToEventLoop()
+"""
 Вот полный вывод программы:
-
-$ python custom-async-sleep.py
-Beginning asynchronous sleep at time: 14:52:22.
-I like work. Work work.
-I like work. Work work.
-I like work. Work work.
-Done asynchronous sleep at time: 14:52:25.
-Вам может показаться, что эта реализация асинхронного сна излишне запутана. И, по сути, так оно и есть. Целью этого примера было продемонстрировать универсальность фьючерсов на простом примере, который можно было бы использовать для более сложных задач. Для справки, вы можете реализовать это без фьючерсов, например, так:
-
+"""
+# $ python custom-async-sleep.py
+# Beginning asynchronous sleep at time: 14:52:22.
+# I like work. Work work.
+# I like work. Work work.
+# I like work. Work work.
+# Done asynchronous sleep at time: 14:52:25.
+"""
+Вам может показаться, что эта реализация асинхронного сна излишне запутана. 
+И, по сути, так оно и есть. Целью этого примера было продемонстрировать универсальность фьючерсов на простом примере, 
+который можно было бы использовать для более сложных задач. Для справки, вы можете реализовать это без фьючерсов, например, так:
+"""
 async def simpler_async_sleep(seconds):
     time_to_wake = time.time() + seconds
     while True:
@@ -186,5 +265,7 @@ async def simpler_async_sleep(seconds):
             return
         else:
             await YieldToEventLoop()
-Но на этом всё. Надеюсь, вы готовы более уверенно погрузиться в асинхронное программирование или изучить более сложные темы в .rest of the documentation
+"""
+Но на этом всё. Надеюсь, вы готовы более уверенно погрузиться в асинхронное программирование 
+или изучить более сложные темы в .rest of the documentation
 """
